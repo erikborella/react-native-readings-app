@@ -1,5 +1,5 @@
 import { createContext } from 'react';
 
-const BooksContext = createContext([]);
+const BooksContext = createContext();
 
 export { BooksContext };

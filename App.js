@@ -6,15 +6,20 @@ import { PaperProvider } from 'react-native-paper';
 import { AppDarkTheme } from './themes/AppDarkTheme';
 import { AppLightTheme } from './themes/AppLightTheme';
 
-import { Routes } from './routes/Routes';
+import { DynamicThemeContext } from './contexts/DynamicThemeContext';
 
-const theme = AppDarkTheme;
+import { Routes } from './routes/Routes';
+import { useState } from 'react';
 
 export default function App() {
+  const [appTheme, setAppTheme] = useState(AppDarkTheme);
+
   return (
-    <PaperProvider theme={theme}>
-      <StatusBar style={theme.dark === true ? 'light':'dark'}/>
-      <Routes/>
-    </PaperProvider>
+    <DynamicThemeContext.Provider value={{ appTheme, setAppTheme }}>
+      <PaperProvider theme={appTheme}>
+        <StatusBar style={appTheme.dark === true ? 'light':'dark'}/>
+        <Routes/>
+      </PaperProvider>
+    </DynamicThemeContext.Provider>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { View } from 'react-native';
 import { 
     Button, 
@@ -8,10 +8,15 @@ import {
     TextInput, 
     useTheme,
     HelperText,
+    IconButton
 } from "react-native-paper";
 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../Firebase';
+
+import { DynamicThemeContext } from '../../contexts/DynamicThemeContext';
+import { AppDarkTheme } from '../../themes/AppDarkTheme';
+import { AppLightTheme } from '../../themes/AppLightTheme';
 
 import { createSeekPasswordTextInputButton } from '../../components/SeekPasswordTextInputButton';
 
@@ -30,7 +35,24 @@ export function SignupScreen({navigation}) {
 
     const [wasSignupPressed, setWasSignupPressed] = useState(false);
 
-    const getPasswordError = () => {
+    const [isFormValid, setIsFormValid] = useState(false);
+    const [formError, setFormError] = useState();
+
+    const { appTheme, setAppTheme } = useContext(DynamicThemeContext);
+
+    function changeThemeToLight() {
+        setAppTheme(AppLightTheme);
+    }
+
+    function changeThemeToDark() {
+        setAppTheme(AppDarkTheme);
+    }
+
+    useEffect(() => {
+        validateForm();
+    }, [email, password, passwordConfirm, wasSignupPressed]);
+
+    function validatePasswordFields() {
         if (!password || !passwordConfirm)
             return null;
 
@@ -39,18 +61,30 @@ export function SignupScreen({navigation}) {
         }
     }
 
-    const getFieldsError = () => {
-        if (!wasSignupPressed)
-            return null;
+    function validateForm() {
+        const passwordValidation = validatePasswordFields();
+
+        if (!!passwordValidation) {
+            setIsFormValid(false);
+            setFormError(passwordValidation);
+
+            return;
+        }
 
         if (!email || !password || !passwordConfirm) {
-            return 'Preencha todos os campos';
-        }
-    }
+            setIsFormValid(false);
 
-    const getError = () => {
-        return getPasswordError() ||
-               getFieldsError();
+            if (!wasSignupPressed) {
+                setFormError(null);
+                return;
+            }
+
+            setFormError('Preencha todos os campos');
+            return;
+        }
+        
+        setIsFormValid(true);
+        setFormError(null);
     }
 
     function navigateBackToLogin() {
@@ -60,9 +94,8 @@ export function SignupScreen({navigation}) {
     function signupNewUser() {
         setWasSignupPressed(true);
 
-        if (!!getError()) {
+        if (!isFormValid)
             return;
-        }
 
         createUserWithEmailAndPassword(auth, email, password)
         .then(() => {
@@ -87,15 +120,23 @@ export function SignupScreen({navigation}) {
                 <Card.Title style={{ padding: 15 }} title="Cadastrar" titleVariant="headlineLarge"/>
                 <Card.Content style={{ display: "flex", height: 250, justifyContent: "space-evenly" }}>
                     <TextInput autoComplete='username' keyboardType='email-address'  textContentType='emailAddress' onChangeText={text => setEmail(text)} mode="outlined" label="Email" />
-                    <TextInput autoComplete='new-password' textContentType='password' onChangeText={text => setPassword(text)} secureTextEntry={hidePasswordText} mode="outlined" label="Senha" right={showPasswordButtonComponent} error={!!getPasswordError()} />
-                    <TextInput autoComplete='new-password' onChangeText={text => setPasswordConfirm(text)} secureTextEntry={hidePasswordConfirmText} mode="outlined" label="Confirme a senha" right={showPasswordConfirmButtonComponent} error={!!getPasswordError()} />
-                    <HelperText visible={!!getError()} type='error'>{getError()}</HelperText>
+                    <TextInput autoComplete='new-password' textContentType='password' onChangeText={text => setPassword(text)} secureTextEntry={hidePasswordText} mode="outlined" label="Senha" right={showPasswordButtonComponent} />
+                    <TextInput autoComplete='new-password' onChangeText={text => setPasswordConfirm(text)} secureTextEntry={hidePasswordConfirmText} mode="outlined" label="Confirme a senha" right={showPasswordConfirmButtonComponent} />
+                    <HelperText visible={!!formError} type='error'>{formError}</HelperText>
                 </Card.Content>
                 <Card.Actions>
                     <Button onPress={navigateBackToLogin}>Login</Button>
                     <Button onPress={signupNewUser} icon='arrow-right'>Cadastrar</Button>
                 </Card.Actions>
             </Card>
+
+            <View style={{ flex: 1, width: '100%', alignItems: "flex-end", justifyContent: "flex-end" }}>
+                { appTheme.dark === true ?
+                    <IconButton icon="white-balance-sunny" onPress={changeThemeToLight} size={30} />
+                    :
+                    <IconButton icon="moon-waning-crescent" onPress={changeThemeToDark} size={30} />
+                }
+            </View>
         </View>
     );
 }

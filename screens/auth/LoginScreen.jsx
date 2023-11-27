@@ -6,14 +6,19 @@ import {
     Text,
     TextInput,
     useTheme,
-    HelperText
+    HelperText,
+    IconButton
 } from "react-native-paper";
 
 import { routesNames } from '../../routes/RoutesNames';
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { auth } from '../../Firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+
+import { DynamicThemeContext } from '../../contexts/DynamicThemeContext';
+import { AppDarkTheme } from '../../themes/AppDarkTheme';
+import { AppLightTheme } from '../../themes/AppLightTheme';
 
 import { createSeekPasswordTextInputButton } from "../../components/SeekPasswordTextInputButton";
 
@@ -28,16 +33,33 @@ export function LoginScreen({navigation}) {
 
     const [wasLoginPressed, setWasLoginPressed] = useState(false);
 
-    const getFieldsError = () => {
-        if (!wasLoginPressed)
-            return null;
+    const [isFormValid, setIsFormValid] = useState(false);
+    const [formError, setFormError] = useState();
 
-        if (!email || !password)
-            return 'Preencha todos os campos'
+    const { appTheme, setAppTheme } = useContext(DynamicThemeContext);
+
+    function changeThemeToLight() {
+        setAppTheme(AppLightTheme);
     }
 
-    const getError = () => {
-        return getFieldsError();
+    function changeThemeToDark() {
+        setAppTheme(AppDarkTheme);
+    }
+
+    useEffect(() => {
+        validateForm();
+    }, [email, password]);
+
+    function validateForm() {
+        if (!email || !password) {
+            setIsFormValid(false);
+            setFormError('Preencha todos os campos');
+
+            return;
+        }
+
+        setIsFormValid(true);
+        setFormError(null);
     }
 
     function navigateToSignup() {
@@ -46,8 +68,8 @@ export function LoginScreen({navigation}) {
 
     function loginUser() {
         setWasLoginPressed(true);
-
-        if (!!getError())
+        
+        if (!isFormValid)
             return;
 
         signInWithEmailAndPassword(auth, email, password)
@@ -70,13 +92,20 @@ export function LoginScreen({navigation}) {
                 <Card.Content style={{ display: "flex", height: 200, justifyContent: "space-evenly" }}>
                     <TextInput autoComplete="username" keyboardType="email-address" textContentType="emailAddress" onChangeText={text => setEmail(text)} mode="outlined" label="Email" />
                     <TextInput autoComplete="password" textContentType="password" onChangeText={text => setPassword(text)} secureTextEntry={hidePasswordText} mode="outlined" label="Password" right={showPasswordButtonComponent}/>
-                    <HelperText visible={!!getError()} type='error'>{getError()}</HelperText>
+                    <HelperText visible={wasLoginPressed && !!formError} type='error'>{formError}</HelperText>
                 </Card.Content>
                 <Card.Actions>
                     <Button onPress={navigateToSignup}>Cadastrar</Button>
                     <Button onPress={loginUser} icon='arrow-right'>Entrar</Button>
                 </Card.Actions>
             </Card>
+            <View style={{ flex: 1, width: '100%', alignItems: "flex-end", justifyContent: "flex-end" }}>
+                { appTheme.dark === true ?
+                    <IconButton icon="white-balance-sunny" onPress={changeThemeToLight} size={30} />
+                    :
+                    <IconButton icon="moon-waning-crescent" onPress={changeThemeToDark} size={30} />
+                }
+            </View>
         </View>
     );
 }
