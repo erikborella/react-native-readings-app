@@ -1,5 +1,4 @@
 import { doc, updateDoc, setDoc, getDocs, query, collection, orderBy, Timestamp } from "firebase/firestore"
-import { serverTimestamp } from 'firebase/database';
 import { db, auth } from "../Firebase"
 
 async function readAllBooks() {
@@ -13,12 +12,15 @@ async function readAllBooks() {
     queryResult.forEach((doc) => {
         const bookData = doc.data();
 
+        console.log(bookData);
+
         queryBooks.push({
             title: doc.id,
             author: bookData.author,
             totalPages: bookData.totalPages,
             pagesRead: bookData.pagesRead,
             isFavorite: bookData.isFavorite,
+            readingIntensity: bookData.readingIntensity,
             readPercentage: bookData.pagesRead / bookData.totalPages,
             isFinished: bookData.totalPages === bookData.pagesRead,
         })

@@ -1,15 +1,15 @@
 import { useContext, useEffect, useState } from "react"
 
-import { AllBooksScreen } from './books/AllBooksScreen';
+import { AllBooksScreen } from './AllBooksScreen';
 
-import { readAllBooks } from '../database/BooksDb';
+import { readAllBooks } from '../../database/BooksDb';
 
-import { BooksContext } from "../contexts/BooksContext"
+import { BooksContext } from "../../contexts/BooksContext"
 
 import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
-import { ReadingBooksScreen } from "./books/ReadingBooksScreen";
-import { FinishedBooksScreen } from "./books/FinishedBooksScreen";
-import { FavoriteBooksScreen } from "./books/FavoriteBooksScreen";
+import { ReadingBooksScreen } from "./ReadingBooksScreen";
+import { FinishedBooksScreen } from "./FinishedBooksScreen";
+import { FavoriteBooksScreen } from "./FavoriteBooksScreen";
 
 const Tab = createMaterialBottomTabNavigator();
 

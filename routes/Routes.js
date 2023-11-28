@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignupScreen } from '../screens/auth/SignupScreen';
-import { MyBooksScreen } from '../screens/MyBooksScreen';
+import { MyBooksScreen } from '../screens/books/MyBooksScreen';
 import { AddReadingScreen } from '../screens/books/AddReadingScreen';
 
 import { AppDarkTheme } from '../themes/AppDarkTheme';
@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { MaterialAppbar } from '../components/MaterialAppbar';
 
 import { BooksContext } from "../contexts/BooksContext"
+import { BookDetailScreen } from '../screens/books/BookDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -42,8 +43,9 @@ export function Routes() {
                         </>
                     ) : (
                         <>
-                            <Stack.Screen name={routesNames.myBooks} component={MyBooksScreen} options={{headerShown: true}} initialParams={{ teste: true }} />
-                            <Stack.Screen name={routesNames.addReading} component={AddReadingScreen} options={{headerShown: true}} initialParams={{ teste: true }} />
+                            <Stack.Screen name={routesNames.myBooks} component={MyBooksScreen} options={{headerShown: true}} />
+                            <Stack.Screen name={routesNames.addReading} component={AddReadingScreen} options={{headerShown: true}} />
+                            <Stack.Screen name={routesNames.viewReading} component={BookDetailScreen} options={{headerShown: true}} />
                         </>
                     ) }
                 </Stack.Navigator>

@@ -9,9 +9,7 @@ export function MaterialAppbar({ navigation, route, options, back }) {
         <Appbar.Header>
             {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
             <Appbar.Content title={title} />
-            {!back ? (
-                <MenuAppbar />
-            ) : null}
+            <MenuAppbar />
         </Appbar.Header>
     );
 }

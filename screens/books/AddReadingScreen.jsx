@@ -65,7 +65,7 @@ export function AddReadingScreen({ navigation }) {
             title: title,
             author: author,
             totalPages: totalPages,
-            readingIntensity: readingIntensity,
+            readingIntensity: Number(readingIntensity),
         };
 
         createBook(newBook)
@@ -74,6 +74,7 @@ export function AddReadingScreen({ navigation }) {
                     title: title,
                     author: author,
                     totalPages: totalPages,
+                    readingIntensity: Number(readingIntensity),
                     pagesRead: 0,
                     isFavorite: false,
                     readPercentage: 0,
@@ -96,7 +97,7 @@ export function AddReadingScreen({ navigation }) {
                 </View>
             </View>
 
-            <Card mode="outlined" style={{ width: '80%', height: '75%', justifyContent: 'center' }}>
+            <Card mode="outlined" style={{ width: '95%', flex: 1, marginBottom: 10, justifyContent: 'center' }}>
                 <ScrollView>
                     <Card.Title style={{ padding: 15 }} title="Informações sobre o Livro:" titleVariant="titleLarge" titleNumberOfLines={2}/>
                     <Card.Content style={{ display: "flex", justifyContent: "space-evenly" }}>
