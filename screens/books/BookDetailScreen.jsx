@@ -137,11 +137,17 @@ export function BookDetailScreen({ navigation, route }) {
                         </View>
                     </Card.Content>
 
-                    <Card.Title style={{ padding: 15 }} title="Cronograma de Leitura:" titleVariant="titleLarge" titleNumberOfLines={2}/>
-                    <Card.Content style={{ display: "flex", justifyContent: "space-evenly" }}>
-                        <Text>Ler {selectedBook.readingIntensity} páginas por dia</Text>
-                        <Text>Previsão de conclusão: {getFinishExpectedDate(selectedBook)}</Text>
-                    </Card.Content>
+                    { selectedBook.isFinished ? 
+                        null 
+                        :
+                        <>
+                            <Card.Title style={{ padding: 15 }} title="Cronograma de Leitura:" titleVariant="titleLarge" titleNumberOfLines={2}/>
+                            <Card.Content style={{ display: "flex", justifyContent: "space-evenly" }}>
+                                <Text>Ler {selectedBook.readingIntensity} páginas por dia</Text>
+                                <Text>Previsão de conclusão: {getFinishExpectedDate(selectedBook)}</Text>
+                            </Card.Content>
+                        </>
+                    }
 
                     <Card.Title style={{ padding: 15, marginTop: 10 }} title="Histórico de Leitura:" titleVariant="titleLarge" titleNumberOfLines={2}/>
 
