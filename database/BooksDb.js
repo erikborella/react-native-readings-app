@@ -12,8 +12,6 @@ async function readAllBooks() {
     queryResult.forEach((doc) => {
         const bookData = doc.data();
 
-        console.log(bookData);
-
         queryBooks.push({
             title: doc.id,
             author: bookData.author,
@@ -22,7 +20,7 @@ async function readAllBooks() {
             isFavorite: bookData.isFavorite,
             readingIntensity: bookData.readingIntensity,
             readPercentage: bookData.pagesRead / bookData.totalPages,
-            isFinished: bookData.totalPages === bookData.pagesRead,
+            isFinished: bookData.totalPages == bookData.pagesRead,
         })
     })
 

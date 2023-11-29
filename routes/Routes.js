@@ -4,7 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignupScreen } from '../screens/auth/SignupScreen';
 import { MyBooksScreen } from '../screens/books/MyBooksScreen';
-import { AddReadingScreen } from '../screens/books/AddReadingScreen';
+import { AddBookScreen } from '../screens/books/AddBookScreen';
+import { AddReadingHistory } from '../screens/books/AddReadingHistory';
 
 import { AppDarkTheme } from '../themes/AppDarkTheme';
 import { routesNames } from './RoutesNames';
@@ -21,7 +22,9 @@ const Stack = createStackNavigator();
 
 export function Routes() {
     const [user, setUser] = useState(null);
+
     const [books, setBooks] = useState([]);
+    const [bookReadingsHistory, setBookReadingsHistory] = useState([]);
 
     function onAuthStateChanged(user) {
         setUser(user);
@@ -33,7 +36,7 @@ export function Routes() {
     }, []);
 
     return (
-        <BooksContext.Provider value={{ books, setBooks }}>
+        <BooksContext.Provider value={{ books, setBooks, bookReadingsHistory, setBookReadingsHistory }}>
             <NavigationContainer theme={AppDarkTheme}>
                 <Stack.Navigator screenOptions={{ header: (props) => <MaterialAppbar {...props}/> }}>
                     { !user ? (
@@ -44,8 +47,9 @@ export function Routes() {
                     ) : (
                         <>
                             <Stack.Screen name={routesNames.myBooks} component={MyBooksScreen} options={{headerShown: true}} />
-                            <Stack.Screen name={routesNames.addReading} component={AddReadingScreen} options={{headerShown: true}} />
+                            <Stack.Screen name={routesNames.addReading} component={AddBookScreen} options={{headerShown: true}} />
                             <Stack.Screen name={routesNames.viewReading} component={BookDetailScreen} options={{headerShown: true}} />
+                            <Stack.Screen name={routesNames.addReadingHistory} component={AddReadingHistory} options={{headerShown: true}} />
                         </>
                     ) }
                 </Stack.Navigator>

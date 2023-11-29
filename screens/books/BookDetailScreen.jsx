@@ -9,7 +9,8 @@ import {
     Card,
     IconButton,
     List,
-    Divider
+    Divider,
+    Button
 } from "react-native-paper";
 
 import { BookReadProgressbar } from "../../components/BookReadProgressbar";
@@ -17,14 +18,13 @@ import { BooksContext } from "../../contexts/BooksContext";
 
 import { updateBook } from "../../database/BooksDb";
 import { readAllReadingHistoryOf } from '../../database/BookReadingHistoryDb';
+import { routesNames } from "../../routes/RoutesNames";
 
-export function BookDetailScreen({ route }) {
+export function BookDetailScreen({ navigation, route }) {
     const theme = useTheme();
     const selectedBook = route.params.selectedBook;
 
-    const { books, setBooks } = useContext(BooksContext);
-
-    const [readingHistory, setReadingHistory] = useState([]);
+    const { books, setBooks, bookReadingsHistory, setBookReadingsHistory } = useContext(BooksContext);
 
     useEffect(() => {
         readBookReadingHistory();
@@ -32,7 +32,7 @@ export function BookDetailScreen({ route }) {
 
     async function readBookReadingHistory() {
         const dbReadingHistory = await readAllReadingHistoryOf(selectedBook);
-        setReadingHistory(dbReadingHistory);
+        setBookReadingsHistory(dbReadingHistory);
     }
 
     function favoriteBook(bookToUpdate) {
@@ -76,9 +76,10 @@ export function BookDetailScreen({ route }) {
         }, []);
     }
 
-    function ReadingHistoryDescription({description, bookTotalPages, totalPagesRead}) {
+    function ReadingHistoryDescription({description, bookTotalPages, totalPagesRead, date}) {
         return (
             <View>
+                <Text>{date.toLocaleDateString('pt-br')}</Text>
                 { !!description ? <Text style={{ margin: 8 }}>{description}</Text> : null}
                 <View style={{ display: 'flex', flexDirection: "row", flex: 1, marginTop: 8, alignItems: "flex-end" }}>
                     <View style={{ flex: 1 }}>
@@ -92,19 +93,22 @@ export function BookDetailScreen({ route }) {
         )
     }
 
-    return (
-        <View style={{ backgroundColor: theme.colors.background, alignItems: 'center', flex: 1}}>
+    function navigateToAddReadingHistory() {
+        navigation.navigate(routesNames.addReadingHistory, { selectedBook: selectedBook });
+    }
 
-            <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', marginVertical: 20}}>
-                <View style={{ display: "flex", alignItems: "center", flexDirection: "row" }}>
-                    <Text style={{color: theme.colors.primary, maxWidth: '60%', paddingHorizontal: 5, textAlign: "center"}} variant="headlineMedium">{selectedBook.title}</Text>
-                    <Icon source={ selectedBook.isFinished ? 'book-check' : 'book-open-blank-variant' } color={theme.colors.primary} size={30} />
-                </View>
+    return (
+        <View style={{ backgroundColor: theme.colors.background, flex: 1}}>
+
+            <View style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "row", marginVertical: 20 }}>
+                <Text style={{color: theme.colors.primary, maxWidth: '60%', paddingHorizontal: 5, textAlign: "center"}} variant="headlineMedium">{selectedBook.title}</Text>
+                <Icon source={ selectedBook.isFinished ? 'book-check' : 'book-open-blank-variant' } color={theme.colors.primary} size={30} />
             </View>
 
-            <Card mode="outlined" style={{ width: '95%', marginBottom: 20, flex: 1 }}>
-                <ScrollView nestedScrollEnabled>
-                    <Card.Title style={{ padding: 15 }} title="Informações sobre o Livro:" titleVariant="titleLarge" titleNumberOfLines={2}/>
+            <View style={{flex: 1, alignItems: "center"}}>
+                <Card mode="outlined" style={{ width: '95%', marginBottom: 20, flex: 1}} contentStyle={{ flex: 1 }}>
+                    <Card.Title style={{ padding: 15 }} title="Informações sobre o Livro:" titleVariant="titleLarge" titleNumberOfLines={2}/>    
+                    
                     <Card.Content style={{ display: "flex", justifyContent: "space-evenly" }}>
                         <View style={{ display: "flex", flexDirection: "row" }}>
                             <Text numberOfLines={1} ellipsizeMode="tail" style={{flex: 1}}>Autor: {selectedBook.author}</Text>
@@ -139,28 +143,36 @@ export function BookDetailScreen({ route }) {
                         <Text>Previsão de conclusão: {getFinishExpectedDate(selectedBook)}</Text>
                     </Card.Content>
 
-                    <Card.Title style={{ padding: 15 }} title="Adicionar Histórico de Leitura:" titleVariant="titleLarge" titleNumberOfLines={2}/>
+                    <Card.Title style={{ padding: 15, marginTop: 10 }} title="Histórico de Leitura:" titleVariant="titleLarge" titleNumberOfLines={2}/>
 
-                    <Card.Title style={{ padding: 15 }} title="Histórico de Leitura:" titleVariant="titleLarge" titleNumberOfLines={2}/>
-
-                    <View style={{ alignItems: "center" }}>
-                        <Card mode="elevated" style={{ width: '90%', maxHeight: 300, marginBottom: 20, justifyContent: 'center' }}>
-                            <ScrollView nestedScrollEnabled>
-                                {accumulatePagesRead(readingHistory).reverse().map((his, i) => (
-                                    <View key={i}>
-                                        <List.Item 
-                                            title={`Páginas lidas: ${his.pagesRead}`}
-                                            description={() => <ReadingHistoryDescription description={his.description} bookTotalPages={selectedBook.totalPages} totalPagesRead={his.totalPages} />}
-                                            left={props => <List.Icon {...props} icon='history' />} />
-                                        <Divider horizontalInset />
-                                    </View>
-                                ))}
-                            </ScrollView>
-                        </Card>
+                    <View style={{ alignItems: "center", flex: 1 }}>
+                        { bookReadingsHistory.length === 0 ? 
+                            <View style={{ flex: 1, justifyContent: 'center', margin: 30 }}>
+                                <Text style={{ textAlign: "center" }} variant="displaySmall">Adicione um histórico de leitura!</Text>
+                            </View> 
+                            :
+                            <Card mode="elevated" style={{ width: '90%', marginBottom: 20, justifyContent: 'center' }}>
+                                <ScrollView>
+                                    {accumulatePagesRead(bookReadingsHistory).reverse().map((history, i) => (
+                                        <View key={i}>
+                                            <List.Item 
+                                                title={`Páginas lidas: ${history.pagesRead}`}
+                                                description={() => <ReadingHistoryDescription description={history.description} bookTotalPages={selectedBook.totalPages} totalPagesRead={history.totalPages} date={history.timestamp} />}
+                                                left={props => <List.Icon {...props} icon='history' />} />
+                                            <Divider horizontalInset />
+                                        </View>
+                                    ))}
+                                </ScrollView>
+                            </Card>
+                        }
                     </View>
-                    
-                </ScrollView>
-            </Card>
+
+                    <Card.Actions>
+                        <Button onPress={navigation.goBack}>Voltar</Button>
+                        <Button onPress={navigateToAddReadingHistory} icon='checkbox-marked-circle-plus-outline'>Adicionar Histórico de Leitura</Button>
+                    </Card.Actions>
+                </Card>
+            </View>
             
         </View>
     );

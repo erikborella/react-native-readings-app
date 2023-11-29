@@ -1,4 +1,4 @@
-import { doc, updateDoc, setDoc, getDocs, query, collection, orderBy, Timestamp } from "firebase/firestore"
+import { doc, addDoc, getDocs, query, collection, orderBy, Timestamp } from "firebase/firestore"
 import { db, auth } from "../Firebase"
 
 async function readAllReadingHistoryOf(book) {
@@ -22,10 +22,19 @@ async function readAllReadingHistoryOf(book) {
         });
     });
 
-    console.log(queryReadingHistory);
-
     return queryReadingHistory;
-
 }
 
-export { readAllReadingHistoryOf };
+async function createReadingHistoryOf(book, readingHistory) {
+    console.info(`Firebase -> Running Create: Creating Reading History for book ${book.title}, ${readingHistory.pagesRead} pages`);
+
+    const newReadingHistoryCollection = collection(db, auth.currentUser.email, book.title, 'readingHistory');
+
+    return await addDoc(newReadingHistoryCollection, {
+        pagesRead: readingHistory.pagesRead,
+        description: readingHistory.description,
+        timestamp: Timestamp.now()
+    });
+}
+
+export { readAllReadingHistoryOf, createReadingHistoryOf };

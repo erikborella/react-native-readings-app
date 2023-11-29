@@ -1,4 +1,4 @@
-import { BooksListScreen } from './shared/BooksListScreen';
+import { BooksListScreen } from '../shared/BooksListScreen';
 
 export function FinishedBooksScreen(props) {
     return (

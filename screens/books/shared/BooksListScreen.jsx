@@ -24,7 +24,7 @@ export function BooksListScreen({ navigation, emptyMessage = 'Sem registros', is
     const theme = useTheme();
     const [expandFAB, setExpandFAB] = useState(true);
 
-    const { books, setBooks } = useContext(BooksContext);
+    const { books, setBooks, setBookReadingsHistory } = useContext(BooksContext);
 
     const [viewBooks, setViewBooks] = useState([])
 
@@ -55,6 +55,7 @@ export function BooksListScreen({ navigation, emptyMessage = 'Sem registros', is
     }
 
     function navigateToBookDetail(book) {
+        setBookReadingsHistory([]);
         navigation.navigate(routesNames.viewReading, { selectedBook: book })
     }
     

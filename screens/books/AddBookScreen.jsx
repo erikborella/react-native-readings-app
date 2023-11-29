@@ -15,7 +15,7 @@ import {
 import { createBook } from '../../database/BooksDb';
 import { BooksContext } from "../../contexts/BooksContext";
 
-export function AddReadingScreen({ navigation }) {
+export function AddBookScreen({ navigation }) {
     const theme = useTheme();
 
     const { books, setBooks } = useContext(BooksContext);
@@ -69,7 +69,7 @@ export function AddReadingScreen({ navigation }) {
         };
 
         createBook(newBook)
-            .then((val) => {
+            .then(() => {
                 setBooks([...books, {
                     title: title,
                     author: author,
@@ -80,6 +80,7 @@ export function AddReadingScreen({ navigation }) {
                     readPercentage: 0,
                     isFinished: false,
                 }]);
+                
                 navigation.goBack();
             })
             .catch((error) => {
@@ -136,7 +137,6 @@ export function AddReadingScreen({ navigation }) {
                                 </>
                             </TouchableRipple>
                         </RadioButton.Group>
-                        <HelperText visible={false} type='error'></HelperText>
                     </Card.Content>
                     
                 </ScrollView>
