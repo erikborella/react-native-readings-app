@@ -173,10 +173,14 @@ export function BookDetailScreen({ navigation, route }) {
                         }
                     </View>
 
-                    <Card.Actions>
-                        <Button onPress={navigation.goBack}>Voltar</Button>
-                        <Button onPress={navigateToAddReadingHistory} icon='checkbox-marked-circle-plus-outline'>Adicionar Histórico de Leitura</Button>
-                    </Card.Actions>
+                    { selectedBook.isFinished ? 
+                        null 
+                        :
+                        <Card.Actions>
+                            <Button onPress={navigation.goBack}>Voltar</Button>
+                            <Button onPress={navigateToAddReadingHistory} icon='checkbox-marked-circle-plus-outline'>Adicionar Histórico de Leitura</Button>
+                        </Card.Actions>
+                    }
                 </Card>
             </View>
             
